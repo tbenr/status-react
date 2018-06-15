@@ -5,7 +5,6 @@
    [status-im.transport.utils :as transport.utils]
    [status-im.ui.screens.group.core :as group]
    [status-im.chat.models :as models.chat]
-   [status-im.transport.message.core :as message]
    [status-im.transport.message.v1.group-chat :as transport.group-chat]
    [status-im.utils.handlers-macro :as handlers-macro]
    [status-im.chat.models.message :as models.message]))
@@ -14,21 +13,32 @@
   {:removed (set/difference existing-participants-set new-participants-set)
    :added   (set/difference new-participants-set existing-participants-set)})
 
+(defn- participants->string [contacts participants]
+  (->> participants
+       (map #(get-in contacts [% :name] %))
+       (interpose ", ")
+       (apply str)))
+
 (defn- prepare-system-message [admin-name added-participants removed-participants contacts]
-  (let [added-participants-names   (map #(get-in contacts [% :name] %) added-participants)
-        removed-participants-names (map #(get-in contacts [% :name] %) removed-participants)]
+  (let [added-participants-names   (participants->string contacts added-participants)
+        removed-participants-names (participants->string contacts removed-participants)]
     (cond
-      (and (seq added-participants) (seq removed-participants))
-      (str admin-name " "
-           (i18n/label :t/invited) " " (apply str (interpose ", " added-participants-names))
-           " and "
-           (i18n/label :t/removed) " " (apply str (interpose ", " removed-participants-names)))
+      (and (seq added-participants)
+           (seq removed-participants))
+      (i18n/label :t/invited-and-removed-participants
+                  {:person  admin-name
+                   :invited added-participants-names
+                   :removed removed-participants-names})
 
       (seq added-participants)
-      (str admin-name " " (i18n/label :t/invited) " " (apply str (interpose ", " added-participants-names)))
+      (i18n/label :t/invited-participants
+                  {:person  admin-name
+                   :invited added-participants-names})
 
       (seq removed-participants)
-      (str admin-name " " (i18n/label :t/removed) " " (apply str (interpose ", " removed-participants-names))))))
+      (i18n/label :t/removed-participants
+                  {:person  admin-name
+                   :removed removed-participants-names}))))
 
 (defn handle-group-admin-update [{:keys [chat-name participants]} chat-id signature {:keys [now db random-id] :as cofx}]
   (let [me (:current-public-key db)]
