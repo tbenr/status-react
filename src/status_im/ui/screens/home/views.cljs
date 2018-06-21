@@ -20,14 +20,16 @@
             [status-im.ui.components.icons.vector-icons :as icons]))
 
 (defn- toolbar [show-welcome?]
-  [toolbar/toolbar nil nil
-   (when-not show-welcome?
-     [toolbar/content-wrapper
-      [components.common/logo styles/toolbar-logo]])
-   [toolbar/actions
-    (when platform/ios?
-      [(-> (toolbar.actions/add true #(re-frame/dispatch [:navigate-to :new]))
-           (assoc-in [:icon-opts :accessibility-label] :new-chat-button))])]])
+  (when-not (and show-welcome?
+                 platform/android?)
+    [toolbar/toolbar nil nil
+     (when-not show-welcome?
+       [toolbar/content-wrapper
+        [components.common/logo styles/toolbar-logo]])
+     [toolbar/actions
+      (when platform/ios?
+        [(-> (toolbar.actions/add true #(re-frame/dispatch [:navigate-to :new]))
+             (assoc-in [:icon-opts :accessibility-label] :new-chat-button))])]]))
 
 (defn- home-action-button []
   [react/view styles/action-button-container

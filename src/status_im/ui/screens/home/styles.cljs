@@ -160,13 +160,13 @@
    :color          colors/gray})
 
 (def welcome-view
-  {:flex               1
-   :padding-horizontal 30})
+  {:flex 1})
 
-(def welcome-image-container
-  {:flex            1
-   :align-items     :center
-   :justify-content :center})
+(defstyle welcome-image-container
+  {:flex        1
+   :align-items :center
+   :android     {:margin-top 30}
+   :ios         {:margin-top 40}})
 
 (def welcome-image
   {:width  320
@@ -180,10 +180,11 @@
    :text-align     :center
    :color          colors/black})
 
-(def welcome-text-description
+(defstyle welcome-text-description
   {:line-height    21
    :margin-top     8
-   :margin-bottom  32
+   :android        {:margin-bottom 82}
+   :ios            {:margin-bottom 32}
    :font-size      14
    :letter-spacing -0.2
    :text-align     :center
