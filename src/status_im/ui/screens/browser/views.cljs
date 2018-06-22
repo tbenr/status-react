@@ -12,7 +12,7 @@
             [status-im.ui.components.react :as components]
             [reagent.core :as reagent]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.vector-icons :as icons]
             [status-im.i18n :as i18n]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.ui.components.toolbar.actions :as actions]
@@ -64,10 +64,9 @@
     [components/activity-indicator {:animating true}]]))
 
 (defn on-navigation-change [event browser]
-  (let [{:strs [url canGoBack canGoForward]} (js->clj event)]
+  (let [{:strs [url]} (js->clj event)]
     (when (and (not (:dapp? browser)) (not= "about:blank" url))
-      (re-frame/dispatch [:update-browser (assoc browser :url url)]))
-    (re-frame/dispatch [:update-browser-options {:can-go-back? canGoBack :can-go-forward? canGoForward}])))
+      (re-frame/dispatch [:update-browser (assoc browser :url url)]))))
 
 (defn get-inject-js [url]
   (let [domain-name (nth (re-find #"^\w+://(www\.)?([^/:]+)" url) 2)]
@@ -77,7 +76,7 @@
   (views/letsubs [webview (atom nil)
                   {:keys [address]} [:get-current-account]
                   {:keys [dapp? url browser-id name] :as browser} [:get-current-browser]
-                  {:keys [can-go-back? can-go-forward? error?]} [:get :browser/options]
+                  {:keys [can-go-forward? error?]} [:get :browser/options]
                   rpc-url [:get :rpc-url]
                   network-id [:get-network-id]]
     [react/keyboard-avoiding-view styles/browser
@@ -115,17 +114,23 @@
        [react/view styles/background
         [react/text (i18n/label :t/enter-dapp-url)]])
      [react/view styles/toolbar
-      [react/touchable-highlight {:on-press            #(.goBack @webview)
-                                  :disabled            (not can-go-back?)
-                                  :accessibility-label :previou-page-button}
-       [react/view (when (not can-go-back?) {:opacity 0.4})
-        [vector-icons/icon :icons/arrow-left]]]
+      [react/touchable-highlight
+       {:on-press            #(do
+                                (.goBack @webview)
+                                (when (not can-go-forward?)
+                                  (re-frame/dispatch [:update-browser-options {:can-go-forward? true}])))
+        :accessibility-label :previou-page-button}
+       [react/view
+        [icons/icon :icons/arrow-left]]]
       [react/touchable-highlight {:on-press            #(.goForward @webview)
                                   :disabled            (not can-go-forward?)
                                   :style               styles/forward-button
                                   :accessibility-label :next-page-button}
        [react/view (when (not can-go-forward?) {:opacity 0.4})
-        [vector-icons/icon :icons/arrow-right]]]]
+        [icons/icon :icons/arrow-right]]]
+      [react/view {:flex 1}]
+      [react/touchable-highlight {:on-press #(.reload @webview)}
+       [icons/icon :icons/refresh]]]
      (when-not dapp?
        [tooltip/bottom-tooltip-info
         (i18n/label :t/browser-warning)])]))
