@@ -413,6 +413,8 @@
  message-model/send-interceptors
  (fn [{{:keys [current-chat-id current-public-key] :as db} :db message-id :random-id current-time :now
        :as cofx} _]
+   (let [wut? nil]
+     (wut? :why?))
    (when-not (get-in db [:chat-ui-props current-chat-id :sending-in-progress?])
      (let [input-text   (get-in db [:chats current-chat-id :input-text])
            chat-command (-> (input-model/selected-chat-command db)

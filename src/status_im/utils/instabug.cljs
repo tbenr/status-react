@@ -53,3 +53,6 @@
                    config/instabug-token
                    (.. rn-dependencies/instabug -invocationEvent -shake))
   (.setIntroMessageEnabled rn-dependencies/instabug false))
+
+(defn report-js-exception [exception]
+  (.reportJSException instabug exception))
