@@ -5,10 +5,7 @@
             [taoensso.timbre :as log]
             [status-im.utils.config :as config]))
 
-(def rns-module
-  (if config/stub-status-go?
-    (non-status-go-module/ReactNativeStatus.)
-    (native-module/ReactNativeStatus.)))
+(def rns-module (native-module/ReactNativeStatus.))
 
 (def adjust-resize 16)
 (def adjust-pan 32)

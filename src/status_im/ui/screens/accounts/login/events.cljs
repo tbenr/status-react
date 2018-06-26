@@ -25,14 +25,10 @@
    (status/clear-web-data)))
 
 (defn change-account [address encryption-key]
-  (let [change-account-fn (fn [] (data-store/change-account address
-                                                            false
-                                                            encryption-key
-                                                            #(dispatch [:change-account-handler % address])))]
-    (if config/stub-status-go?
-      (utils/set-timeout change-account-fn
-                         300)
-      (change-account-fn))))
+  (data-store/change-account address
+                             false
+                             encryption-key
+                             #(dispatch [:change-account-handler % address])))
 
 (reg-fx
  ::change-account
