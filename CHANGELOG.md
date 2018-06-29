@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Spam moderation
 - Collectibles support (CryptoKitties, CryptoStrikers and Etheremon)
 - Added more dapps
+- Sound for Push Notifications, tap on PN opens corresponding chat
 
 ### Fixed
 - Fixed mailservers connectivity issue
