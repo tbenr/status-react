@@ -129,6 +129,8 @@
     ;; There is no validation for the `/send` command, as it's fully delegated to the wallet
     nil)
   (on-send [_ message-id parameters cofx]
+    ;; TODO janherich: express effect prefilling wallet `:wallet-send` state and navigating
+    ;; to wallet
     (when-let [tx-hash (get-in cofx [:db :wallet :send-transaction :tx-hash])]
       {:dispatch [:update-transactions]}))
   (short-preview [_ command-message]
