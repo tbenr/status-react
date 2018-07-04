@@ -61,7 +61,7 @@ open -a /Applications/Genymotion.app/Contents/MacOS/player.app --args --vm-name 
 fi
 
 # Install deps, prepare for genymotion and figwheel
-lein deps && npm install && ./re-natal use-android-device "${device_type}" && ./re-natal use-figwheel && npm install
+lein deps && yarn install && ./re-natal use-android-device "${device_type}" && ./re-natal use-figwheel
 
 cd android && ./gradlew react-native-android:installArchives && cd ../
 
