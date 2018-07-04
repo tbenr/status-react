@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Spam moderation
 - Collectibles support (CryptoKitties, CryptoStrikers and Etheremon)
 
+### Fixed
+- Clear chat action correctly clear the unread messages counter
+
 ## [0.9.21] - 2018-06-25
 ### Added
 - Mainnet is enabled by default on new installations. Upgrades will need to manually switch.
