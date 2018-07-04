@@ -27,7 +27,7 @@
      {:style               components.styles/flex
       :height              92
       :ref                 (partial reset! input-ref)
-      :label               (i18n/label :t/passphrase)
+      :label               (i18n/label :t/recovery-phrase)
       :placeholder         (i18n/label :t/enter-12-words)
       :multiline           true
       :default-value       passphrase
