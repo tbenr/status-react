@@ -19,7 +19,7 @@
 
 (defn universal-link? [url]
   (boolean
-   (re-matches #"((^https?://get.status.im/)|(^status-im://)).*$" url)))
+   (re-matches #"((^https?://get.status.im/)|(^status-im://))[\x00-\x7F]+$" url)))
 
 (defn open! [url]
   (log/info "universal-links:  opening " url)
