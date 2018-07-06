@@ -80,9 +80,9 @@
    (not (nil? amount))))
 
 ;; "Sign Later" and "Sign Transaction >" buttons
-(defn- sign-button [amount-error to amount sufficient-funds? modal?]
+(defn- sign-button [amount-error to amount sufficient-funds? sufficient-gas? modal?]
   (let [sign-enabled?           (sign-enabled? amount-error to amount)
-        immediate-sign-enabled? (or modal? (and sign-enabled? sufficient-funds?))]
+        immediate-sign-enabled? (or modal? (and sign-enabled? sufficient-funds? sufficient-gas?))]
     [bottom-buttons/bottom-buttons
      styles/sign-buttons
      [react/view]
@@ -214,8 +214,8 @@
      [advanced-cartouche transaction modal?])])
 
 (defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? network]}]
-  (let [{:keys [amount amount-text amount-error asset-error signing? to to-name sufficient-funds? in-progress?
-                from-chat? symbol]} transaction
+  (let [{:keys [amount amount-text amount-error asset-error signing? to to-name sufficient-funds? sufficient-gas?
+                in-progress? from-chat? symbol]} transaction
         {:keys [decimals] :as token} (tokens/asset-for (ethereum/network->chain-keyword network) symbol)
         timeout (atom nil)]
     [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
@@ -238,7 +238,8 @@
                                     :symbol    symbol}]
         [components/amount-selector {:disabled?     (or from-chat? modal?)
                                      :error         (or amount-error
-                                                        (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds)))
+                                                        (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds))
+                                                        (when-not sufficient-gas? (i18n/label :t/wallet-insufficient-gas)))
                                      :amount        amount
                                      :amount-text   amount-text
                                      :input-options {:max-length     21
@@ -250,7 +251,7 @@
          #(re-frame/dispatch (if modal? [:wallet/cancel-signing-modal] [:wallet/discard-transaction]))
          #(re-frame/dispatch (if modal? [:wallet/sign-transaction-modal] [:wallet/sign-transaction]))
          :t/transactions-sign-transaction]
-        [sign-button amount-error to amount sufficient-funds? modal?])
+        [sign-button amount-error to amount sufficient-funds? sufficient-gas? modal?])
       (when signing?
         [sign-panel :t/signing-phrase-description in-progress?])
       (when in-progress? [react/view styles/processing-view])]]))
