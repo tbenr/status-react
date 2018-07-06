@@ -63,6 +63,8 @@
 (defn normalize-url [url]
   (str (when (and url (not (re-find #"^[a-zA-Z-_]+:/" url))) "http://") url))
 
+(def normalize-and-decode-url (comp js/decodeURI normalize-url))
+
 (defn parse-payload [o]
   (when o
     (try

@@ -12,7 +12,6 @@
             [status-im.test.bots.events]
             [status-im.test.models.mailserver]
             [status-im.test.models.bootnode]
-            [status-im.test.models.browser-history]
             [status-im.test.models.account]
             [status-im.test.models.contact]
             [status-im.test.models.network]
@@ -69,7 +68,6 @@
  'status-im.test.models.mailserver
  'status-im.test.models.bootnode
  'status-im.test.models.account
- 'status-im.test.models.browser-history
  'status-im.test.models.contact
  'status-im.test.models.network
  'status-im.test.models.wallet
