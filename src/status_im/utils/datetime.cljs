@@ -84,10 +84,9 @@
                                                (plus time-zone-offset)))))
 
 (defn timestamp->long-date [ms]
-  (keyword (unparse (formatter "MMM DD YYYY HH:mm:ss")
-                    (-> ms
-                        from-long
-                        (plus time-zone-offset)))))
+  (.format date-time-fmt  (-> ms
+                              from-long
+                              (plus time-zone-offset))))
 
 (defn format-time-ago [diff unit]
   (let [name (label-pluralize diff (:name unit))]
