@@ -33,30 +33,39 @@
           loc (get goog.i18n (str "DateTimeSymbols_" name-first))]
       (or loc goog.i18n.DateTimeSymbols_en))))
 
-;; set default is24Hour (to be used when device-info module is not available (ie. desktop))
-;; detects if current locale's timeformat generates AM/PM
-(def default-is24Hour
+;; detects if given locale sym timeformat generates AM/PM ("a")
+(defn- is24Hour-locsym [locsym]
   (not (s/includes?
-        (nth (get (locale-symbols status-im.i18n/locale) 'TIMEFORMATS) 2)
+        (nth (get locsym 'TIMEFORMATS) 2)
         "a")))
 
-;; returns is24Hour from device or from default
-(def is24Hour
-  (if (resolve 'rn/device-info)
+;; returns is24Hour from device or from given locale
+;; (when device-info module is not available (ie. desktop) returns from the given locale)
+(defn- is24Hour [locsym]
+  (if rn/device-info
     (.is24Hour rn/device-info)
-    default-is24Hour))
+    (is24Hour-locsym locsym)))
 
-(def medium-date-format (nth (get (locale-symbols status-im.i18n/locale) 'DATEFORMATS) 2));(def medium-date-format (.-MEDIUM_DATE goog.i18n.DateTimeFormat.Format)); (def medium-date-format "dd MMM yyyy")
-(def short-date-format "dd MMM");(.-SHORT_DATE goog.i18n.DateTimeFormat.Format))
-(def short-time-format (if is24Hour "HH:mm" "h:mm a"))
-(def time-format (if is24Hour "HH:mm:ss" "h:mm:ss a"))
-(def medium-date-time-format (str medium-date-format ", " time-format))
+;; time formats 
+(defn- short-time-format [locsym] (if (is24Hour locsym) "HH:mm" "h:mm a"))
+(defn- time-format [locsym] (if (is24Hour locsym) "HH:mm:ss" "h:mm:ss a"))
 
-(defn getis24 [] {:pippo is24Hour :pluto default-is24Hour})
+;; date formats
+(defn- short-date-format [locsym] "dd MMM")
+(defn- medium-date-format [locsym] (nth (get locsym 'DATEFORMATS) 2)) ; get format from current locale
 
-(defn mk-fmt [locale format]
-  (goog.i18n.DateTimeFormat. format (locale-symbols locale)))
+;(def medium-date-time-format (.-MEDIUM_DATETIME goog.i18n.DateTimeFormat.Format))
+;(def medium-date-format (.-MEDIUM_DATE goog.i18n.DateTimeFormat.Format))
 
+;; date-time formats
+(defn- medium-date-time-format [locsym] (str (medium-date-format locsym) ", " (time-format locsym)))
+
+;; get formatter for current locale symbols and format function
+(defn- mk-fmt [locale format-fn]
+  (let [locsym (locale-symbols locale)]
+    (goog.i18n.DateTimeFormat. (format-fn locsym) locsym)))
+
+;; generate formatters for different formats
 (def date-time-fmt
   (mk-fmt status-im.i18n/locale medium-date-time-format))
 (def date-fmt
@@ -65,6 +74,10 @@
   (mk-fmt status-im.i18n/locale short-time-format))
 (def short-date-fmt
   (mk-fmt status-im.i18n/locale short-date-format))
+
+;;
+;; functions which apply formats for the given timestamp
+;;
 
 (defn- to-str [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
   (let [date (from-long ms)

@@ -28,4 +28,4 @@
 (def snoopy-buffer          #js {})
 (def background-timer       #js {:setTimeout (fn [])})
 (def testfairy              #js {})
-(def device-info            #js {})
+(def device-info            nil)
