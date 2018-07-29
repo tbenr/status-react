@@ -33,13 +33,13 @@
           loc (get goog.i18n (str "DateTimeSymbols_" name-first))]
       (or loc goog.i18n.DateTimeSymbols_en))))
 
-;; detects if given locale sym timeformat generates AM/PM ("a")
+;; detects if given locale symbols timeformat generates AM/PM ("a")
 (defn- is24Hour-locsym [locsym]
   (not (s/includes?
         (nth (get locsym 'TIMEFORMATS) 2)
         "a")))
 
-;; returns is24Hour from device or from given locale
+;; returns is24Hour from device or from given locale symbols
 ;; (when device-info module is not available (ie. desktop) returns from the given locale)
 (defn- is24Hour [locsym]
   (if rn/device-info
@@ -52,7 +52,7 @@
 
 ;; date formats
 (defn- short-date-format [locsym] "dd MMM")
-(defn- medium-date-format [locsym] (nth (get locsym 'DATEFORMATS) 2)) ; get format from current locale
+(defn- medium-date-format [locsym] (nth (get locsym 'DATEFORMATS) 2)) ; get medium format from current locale symbols
 
 ;(def medium-date-time-format (.-MEDIUM_DATETIME goog.i18n.DateTimeFormat.Format))
 ;(def medium-date-format (.-MEDIUM_DATE goog.i18n.DateTimeFormat.Format))
