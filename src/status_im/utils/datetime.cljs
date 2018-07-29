@@ -5,6 +5,7 @@
                                       formatter
                                       unparse]]
             [status-im.i18n :refer [label label-pluralize]]
+            [status-im.react-native.js-dependencies :as rn]
             [goog.string :as gstring]
             goog.string.format
             goog.i18n.DateTimeFormat
@@ -32,9 +33,17 @@
           loc (get goog.i18n (str "DateTimeSymbols_" name-first))]
       (or loc goog.i18n.DateTimeSymbols_en))))
 
-(def medium-date-time-format (.-MEDIUM_DATETIME goog.i18n.DateTimeFormat.Format))
-(def medium-date-format (.-MEDIUM_DATE goog.i18n.DateTimeFormat.Format))
-(def short-time-format (.-SHORT_TIME goog.i18n.DateTimeFormat.Format))
+(def medium-date-format (nth (get (locale-symbols status-im.i18n/locale) 'DATEFORMATS) 2));(def medium-date-format (.-MEDIUM_DATE goog.i18n.DateTimeFormat.Format)); (def medium-date-format "dd MMM yyyy")
+(def short-date-format "dd MMM");(.-SHORT_DATE goog.i18n.DateTimeFormat.Format))
+(def short-time-format
+  (if (resolve 'rn/device-info)
+    (if (.is24Hour rn/device-info) "HH:mm" "h:mm a")
+    "HH:mm"))
+(def time-format
+  (if (resolve 'rn/device-info)
+    (if (.is24Hour rn/device-info) "HH:mm:ss" "h:mm:ss a")
+    "HH:mm:ss"))
+(def medium-date-time-format (str medium-date-format ", " time-format))
 
 (defn mk-fmt [locale format]
   (goog.i18n.DateTimeFormat. format (locale-symbols locale)))
@@ -45,6 +54,8 @@
   (mk-fmt status-im.i18n/locale medium-date-format))
 (def time-fmt
   (mk-fmt status-im.i18n/locale short-time-format))
+(def short-date-fmt
+  (mk-fmt status-im.i18n/locale short-date-format))
 
 (defn- to-str [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
   (let [date (from-long ms)
@@ -69,9 +80,9 @@
           #(label :t/datetime-today)))
 
 (defn timestamp->mini-date [ms]
-  (unparse (formatter "dd MMM") (-> ms
-                                    from-long
-                                    (plus time-zone-offset))))
+  (.format short-date-fmt (-> ms
+                              from-long
+                              (plus time-zone-offset))))
 
 (defn timestamp->time [ms]
   (.format time-fmt (-> ms

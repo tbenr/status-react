@@ -38,6 +38,7 @@
 (def EventEmmiter            #js {})
 (def fetch                   #js {})
 (def testfairy               #js {})
+(def device-info             #js {:is24Hour (fn [])})
 
 (def background-timer       #js {:setTimeout js/setTimeout
                                  :setInterval js/setInterval

@@ -26,6 +26,7 @@ import io.realm.react.RealmReactPackage;
 import me.alwx.HttpServer.HttpServerReactPackage;
 import com.testfairy.react.TestFairyPackage;
 import com.oblador.keychain.KeychainPackage;
+import com.learnium.RNDeviceInfo.RNDeviceInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,6 +76,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new WebViewBridgePackage(webViewDebugEnabled, callRPC),
                     new ReactNativeConfigPackage(),
                     new KeychainPackage(),
+                    new RNDeviceInfo(),
                     new RNInstabugReactnativePackage.Builder(BuildConfig.INSTABUG_TOKEN,MainApplication.this)
                             .setInvocationEvent("shake")
                             .setPrimaryColor("#1D82DC")
