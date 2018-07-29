@@ -33,17 +33,26 @@
           loc (get goog.i18n (str "DateTimeSymbols_" name-first))]
       (or loc goog.i18n.DateTimeSymbols_en))))
 
+;; set default is24Hour (to be used when device-info module is not available (ie. desktop))
+;; detects if current locale's timeformat generates AM/PM
+(def default-is24Hour
+  (not (s/includes?
+        (nth (get (locale-symbols status-im.i18n/locale) 'TIMEFORMATS) 2)
+        "a")))
+
+;; returns is24Hour from device or from default
+(def is24Hour
+  (if (resolve 'rn/device-info)
+    (.is24Hour rn/device-info)
+    default-is24Hour))
+
 (def medium-date-format (nth (get (locale-symbols status-im.i18n/locale) 'DATEFORMATS) 2));(def medium-date-format (.-MEDIUM_DATE goog.i18n.DateTimeFormat.Format)); (def medium-date-format "dd MMM yyyy")
 (def short-date-format "dd MMM");(.-SHORT_DATE goog.i18n.DateTimeFormat.Format))
-(def short-time-format
-  (if (resolve 'rn/device-info)
-    (if (.is24Hour rn/device-info) "HH:mm" "h:mm a")
-    "HH:mm"))
-(def time-format
-  (if (resolve 'rn/device-info)
-    (if (.is24Hour rn/device-info) "HH:mm:ss" "h:mm:ss a")
-    "HH:mm:ss"))
+(def short-time-format (if is24Hour "HH:mm" "h:mm a"))
+(def time-format (if is24Hour "HH:mm:ss" "h:mm:ss a"))
 (def medium-date-time-format (str medium-date-format ", " time-format))
+
+(defn getis24 [] {:pippo is24Hour :pluto default-is24Hour})
 
 (defn mk-fmt [locale format]
   (goog.i18n.DateTimeFormat. format (locale-symbols locale)))

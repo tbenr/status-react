@@ -21,11 +21,27 @@
 ;; 1970-01-03 00:00:00 UTC
 (def epoch-plus-3d 172800000)
 
-; (deftest to-short-str-today-test
-;   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
-;                 d/time-fmt (d/mk-fmt "us" d/short-time-format)
-;                 d/time-zone-offset (t/period :hours 0)]
-;     (is (= (d/to-short-str epoch-plus-3d) "12:00 AM"))))
+(deftest to-short-str-today-test
+  (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
+                d/time-fmt (d/mk-fmt "us" d/short-time-format)
+                d/time-zone-offset (t/period :hours 0)]
+    (is (= (d/to-short-str epoch-plus-3d) "12:00 AM"))))
+
+(deftest test1
+  (with-redefs [d/is24Hour false]
+    (is (= d/short-time-format "12:00 - AM"))))
+
+(deftest test2
+  (with-redefs [d/is24Hour false]
+    (is (= (d/getis24) "12:00 - AM"))))
+
+(deftest test3
+  (with-redefs [d/is24Hour true]
+    (is (= (d/getis24) "12:00 - AM"))))
+
+(deftest test4
+  (is (= (d/getis24) "12:00 - AM")))
+
 ; 
 ; (deftest to-short-str-before-yesterday-us-test
 ;   (with-redefs [t/*ms-fn* (constantly epoch-plus-3d)
