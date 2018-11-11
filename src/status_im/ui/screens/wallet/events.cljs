@@ -93,8 +93,8 @@
 
 (re-frame/reg-fx
  :update-estimated-gas
- (fn [{:keys [web3 obj success-event]}]
-   (ethereum/estimate-gas-web3 web3 (clj->js obj) #(re-frame/dispatch [success-event %2]))))
+ (fn [{:keys [web3 obj success-event edit?]}]
+   (ethereum/estimate-gas-web3 web3 (clj->js obj) #(re-frame/dispatch [success-event %2 edit?]))))
 
 ;; Handlers
 (handlers/register-handler-fx
@@ -236,9 +236,12 @@
 
 (handlers/register-handler-fx
  :wallet/update-estimated-gas-success
- (fn [{:keys [db]} [_ gas]]
+ (fn [{:keys [db] :as cofx} [_ gas edit?]]
    (when gas
-     {:db (assoc-in db [:wallet :send-transaction :gas] (money/bignumber (int (* gas 1.2))))})))
+     (let [actual-gas (money/bignumber (int (* gas 1.2)))]
+       (if edit?
+         (models/edit-value :gas actual-gas cofx)
+         {:db (assoc-in db [:wallet :send-transaction :gas] actual-gas)})))))
 
 (handlers/register-handler-fx
  :wallet-setup-navigate-back
